@@ -20,7 +20,7 @@
             <input
               type="text"
               :value="tempInnerText"
-              v-if="tempInnerText !== ''"
+              v-if="tempInnerText !== '' && tempTaskIndex === index"
               @keyup="onConfirmEditTask"
               class="container-list-form__input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
               :class="validateInput"
@@ -29,7 +29,7 @@
               :style="checkedStyle(index)"
               @click="onEditTask(index, $event)"
               class="cursor-pointer"
-              v-if="tempInnerText === ''"
+              v-if="tempInnerText === '' || tempTaskIndex !== index"
             >
               {{ item.message }}
             </span>
