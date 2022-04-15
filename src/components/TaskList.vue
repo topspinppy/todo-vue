@@ -16,6 +16,7 @@
               @change="onCheckboxChange"
               ref="taskListEl"
               class="w-6 h-6 mr-4 rounded-xl"
+              :disabled="tempTaskIndex === index && tempInnerText !== ''"
             />
             <input
               type="text"
@@ -28,7 +29,7 @@
             <span
               :style="checkedStyle(index)"
               @click="onEditTask(index, $event)"
-              class="cursor-pointer"
+              :class="validateEditTaskInput"
               v-if="tempInnerText === '' || tempTaskIndex !== index"
             >
               {{ item.message }}
@@ -67,6 +68,7 @@ export default {
       tempInnerText: '',
       tempTaskIndex: null,
       isNewTaskEmptyInput: false,
+      tempIsDone: false,
     }
   },
   props: {
@@ -85,6 +87,10 @@ export default {
   },
   methods: {
     onEditTask(index, event) {
+      if (this.tasks[index].isDone === true) {
+        this.tempIsDone = true
+        return
+      }
       this.tempTaskIndex = index
       this.tempInnerText = event.target.innerText
     },
@@ -121,6 +127,9 @@ export default {
     },
     validateInput() {
       return this.isNewTaskEmptyInput === true ? `border-red-600` : ``
+    },
+    validateEditTaskInput() {
+      return !this.tempIsDone && `cursor-pointer`
     },
   },
 }
