@@ -1,5 +1,5 @@
 <template>
-  <div class="container-list-form">
+  <div class="container-list-form p-8">
     <label>วันนี้คุณต้องการทำอะไร ?</label>
     <div class="container-list-form__inline">
       <input

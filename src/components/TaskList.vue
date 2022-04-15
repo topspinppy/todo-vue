@@ -37,7 +37,7 @@
           </div>
           <div>
             <button
-              v-if="item.isDone === false"
+              v-if="item.isDone === false && tempTaskIndex !== index"
               class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded-md"
               @click="onRemoveTask(index)"
             >
