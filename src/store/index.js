@@ -29,6 +29,10 @@ const store = createStore({
       const newSubTask = subTask.filter((item, index) => index !== subIndex)
       state.tasks[rootIndex].subTask = newSubTask
     },
+    onFinishedSubTask(state, taskBody) {
+      const { rootIndex, childIndex, isDone } = taskBody
+      state.tasks[rootIndex].subTask[childIndex].isDone = isDone
+    },
     onFinishedTask(state, taskBody) {
       const { index, isChecked } = taskBody
       const { tasks } = this.state

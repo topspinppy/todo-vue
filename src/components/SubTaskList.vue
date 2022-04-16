@@ -4,7 +4,15 @@
       <li v-for="(item, index) in tasks[rootIndex].subTask" :key="index" class="pl-10 mb-2">
         <div class="flex justify-between">
           <div class="flex items-center">
-            <input type="checkbox" :key="index" class="w-6 h-6 mr-4 rounded-xl" />
+            <input
+              type="checkbox"
+              :key="index"
+              :value="index"
+              class="w-6 h-6 mr-4 rounded-xl"
+              @change="_onCheckboxChange"
+              :checked="item.isDone"
+              v-if="item.message !== ''"
+            />
             <input
               type="text"
               class="container-list-form__input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
@@ -12,11 +20,14 @@
               @keyup.enter="_onEnterAddSubTask(index, $event)"
               v-if="item.message === ''"
             />
-            <span v-if="item.message !== ''" class="text-gray-700">{{ item.message }}</span>
+            <span v-if="item.message !== ''" class="text-gray-700" :class="validateTask(item)">{{
+              item.message
+            }}</span>
           </div>
           <button
-            class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded-md"
+            class="bg-orange-400 hover:bg-orange-500 text-white font-bold py-1 px-2 rounded-md bg-o"
             @click="_removeSubTask(index)"
+            v-if="item.message === ''"
           >
             Delete
           </button>
@@ -49,11 +60,26 @@ export default {
     _removeSubTask(index) {
       this.$store.commit('removeSubTask', { rootIndex: this.rootIndex, subIndex: index })
     },
+    _onCheckboxChange(event) {
+      this.$store.commit('onFinishedSubTask', {
+        rootIndex: this.rootIndex,
+        childIndex: event.target.value,
+        isDone: event.target.checked,
+      })
+    },
+    validateTask(item) {
+      return item.isDone ? 'line-through' : 'no-underline'
+    },
   },
   computed: {
     ...mapState({
       tasks: (state) => state.tasks,
     }),
+  },
+  watch: {
+    tasks() {
+      console.log('watch')
+    },
   },
 }
 </script>

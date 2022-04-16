@@ -82,7 +82,6 @@ export default {
   },
   data() {
     return {
-      currentEndTaskIndex: 0,
       imageSize: '20px',
       tempInnerText: '',
       tempTaskIndex: null,
@@ -103,7 +102,6 @@ export default {
       this.tempInnerText = event.target.innerText
     },
     onCheckboxChange(event) {
-      this.currentEndTaskIndex = event.target.value
       this.$store.commit('onFinishedTask', {
         index: event.target.value,
         isChecked: event.target.checked,
