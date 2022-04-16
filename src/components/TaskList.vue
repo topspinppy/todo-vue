@@ -6,44 +6,58 @@
         <h4 class="font-bold text-centet text-lg">รายการที่ต้องทำยังว่าง</h4>
         <h6 class="text-xs">เพิ่มรายการที่คุณต้องทำเลย !</h6>
       </div>
-      <ul>
-        <li v-for="(item, index) in tasks" :key="index" class="flex justify-between items-center">
-          <div class="flex items-center">
-            <input
-              type="checkbox"
-              :key="index"
-              :value="index"
-              @change="onCheckboxChange"
-              ref="taskListEl"
-              class="w-6 h-6 mr-4 rounded-xl"
-              :disabled="tempTaskIndex === index && tempInnerText !== ''"
-            />
-            <input
-              type="text"
-              :value="tempInnerText"
-              v-if="tempInnerText !== '' && tempTaskIndex === index"
-              @keyup="onConfirmEditTask"
-              class="container-list-form__input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
-              :class="validateInput"
-            />
-            <span
-              :style="checkedStyle(index)"
-              @click="onEditTask(index, $event)"
-              :class="validateEditTaskInput"
-              v-if="tempInnerText === '' || tempTaskIndex !== index"
-            >
-              {{ item.message }}
-            </span>
+      <ul class="task-container">
+        <li
+          v-for="(item, index) in tasks"
+          :key="index"
+          class="flex items-center flex-col task-container__top"
+        >
+          <div class="flex w-full justify-between">
+            <div class="flex items-center">
+              <input
+                type="checkbox"
+                :key="index"
+                :value="index"
+                @change="onCheckboxChange"
+                ref="taskListEl"
+                class="w-6 h-6 mr-4 rounded-xl"
+                :disabled="tempTaskIndex === index && tempInnerText !== ''"
+              />
+              <input
+                type="text"
+                :value="tempInnerText"
+                v-if="tempInnerText !== '' && tempTaskIndex === index"
+                @keyup="onConfirmEditTask"
+                class="container-list-form__input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
+                :class="validateInput"
+              />
+              <span
+                :style="checkedStyle(index)"
+                @click="onEditTask(index, $event)"
+                :class="validateEditTaskInput"
+                v-if="tempInnerText === '' || tempTaskIndex !== index"
+              >
+                {{ item.message }}
+              </span>
+            </div>
+            <div>
+              <button
+                v-if="item.isDone === false && tempTaskIndex !== index"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-md mr-2"
+                @click="addSubTask(index)"
+              >
+                Add SubTask
+              </button>
+              <button
+                v-if="item.isDone === false && tempTaskIndex !== index"
+                class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded-md"
+                @click="onRemoveTask(index)"
+              >
+                Delete
+              </button>
+            </div>
           </div>
-          <div>
-            <button
-              v-if="item.isDone === false && tempTaskIndex !== index"
-              class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded-md"
-              @click="onRemoveTask(index)"
-            >
-              Delete
-            </button>
-          </div>
+          <SubTaskList :rootIndex="index" />
         </li>
       </ul>
     </div>
@@ -59,8 +73,13 @@
 </template>
 
 <script>
+import SubTaskList from './SubTaskList.vue'
+import { mapState } from 'vuex'
 export default {
   name: 'TaskList',
+  components: {
+    SubTaskList,
+  },
   data() {
     return {
       currentEndTaskIndex: 0,
@@ -71,21 +90,10 @@ export default {
       tempIsDone: false,
     }
   },
-  props: {
-    tasks: {
-      type: Array,
-    },
-    onRemoveTask: {
-      type: Function,
-    },
-    onFinishedTask: {
-      type: Function,
-    },
-    _onEditTask: {
-      type: Function,
-    },
-  },
   methods: {
+    addSubTask(index) {
+      this.$store.commit('addSubTask', index)
+    },
     onEditTask(index, event) {
       if (this.tasks[index].isDone === true) {
         this.tempIsDone = true
@@ -96,7 +104,7 @@ export default {
     },
     onCheckboxChange(event) {
       this.currentEndTaskIndex = event.target.value
-      this.onFinishedTask({
+      this.$store.commit('onFinishedTask', {
         index: event.target.value,
         isChecked: event.target.checked,
       })
@@ -113,12 +121,21 @@ export default {
         this.isNewTaskEmptyInput = true
         return
       }
-      this._onEditTask(event.target.value, this.tempTaskIndex)
+      this.$store.commit('onEditTask', {
+        index: this.tempTaskIndex,
+        message: event.target.value,
+      })
       this.tempInnerText = ''
       this.tempTaskIndex = null
     },
+    onRemoveTask(index) {
+      this.$store.commit('onRemoveTask', index)
+    },
   },
   computed: {
+    ...mapState({
+      tasks: (state) => state.tasks,
+    }),
     successTask() {
       return this.tasks.filter((item) => item.isDone).length
     },
@@ -135,15 +152,14 @@ export default {
 }
 </script>
 
-<style>
-ul {
+<style scope>
+.task-container {
   list-style-type: none;
   text-align: left;
-  padding-left: 20px;
   width: 100%;
 }
 
-li {
+.task-container__top {
   margin-bottom: 1ch;
   margin-top: 1ch;
   display: flex;

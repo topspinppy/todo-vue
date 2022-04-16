@@ -1,13 +1,8 @@
 <template>
   <div class="container">
-    <p>-𝗧𝗢 𝗗𝗢 𝗟𝗜𝗦𝗧 -</p>
-    <TaskForm :onTask="addTask" />
-    <TaskList
-      :tasks="tasks"
-      :onFinishedTask="onFinishedTask"
-      :onRemoveTask="onRemoveTask"
-      :_onEditTask="onEditTask"
-    />
+    <p>{{ $store.state.title }}</p>
+    <TaskForm />
+    <TaskList />
   </div>
 </template>
 
@@ -20,31 +15,6 @@ export default {
   components: {
     TaskForm,
     TaskList,
-  },
-  data() {
-    return {
-      tasks: [],
-    }
-  },
-  methods: {
-    addTask(task) {
-      this.tasks.push(task)
-    },
-    onFinishedTask(task) {
-      const taskItem = this.tasks
-      taskItem[task.index].isDone = task.isChecked
-      this.task = taskItem
-    },
-    onRemoveTask(index) {
-      const taskItem = this.tasks
-      const newTaskItem = taskItem.filter((item, i) => i !== index)
-      this.tasks = newTaskItem
-    },
-    onEditTask(textTask, index) {
-      let taskItem = this.tasks
-      taskItem[index].message = textTask
-      this.tasks = taskItem
-    },
   },
 }
 </script>

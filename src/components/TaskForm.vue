@@ -49,7 +49,7 @@ export default {
       }
       this.taskValue = this.$refs.taskInputRef.value
       if (this.$refs.taskInputRef.value === '') return
-      this.onTask(messageBody)
+      this.$store.commit('addTask', messageBody)
       this.$refs.taskInputRef.value = ''
     },
   },
