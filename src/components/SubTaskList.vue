@@ -16,21 +16,32 @@
             <input
               type="text"
               class="container-list-form__input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
+              :class="validateSubTaskInput"
               :key="index"
               @keyup.enter="_onEnterAddSubTask(index, $event)"
               v-if="item.message === ''"
+              ref="subTaskInputRef"
             />
             <span v-if="item.message !== ''" class="text-gray-700" :class="validateTask(item)">{{
               item.message
             }}</span>
           </div>
-          <button
-            class="bg-orange-400 hover:bg-orange-500 text-white font-bold py-1 px-2 rounded-md bg-o"
-            @click="_removeSubTask(index)"
-            v-if="item.message === ''"
-          >
-            Delete
-          </button>
+          <div>
+            <button
+              class="bg-green-400 hover:bg-green-500 text-white font-bold py-1 px-2 rounded-md mr-2"
+              @click="_onAddSubTask(index)"
+              v-if="item.message === ''"
+            >
+              Confirm
+            </button>
+            <button
+              class="bg-orange-400 hover:bg-orange-500 text-white font-bold py-1 px-2 rounded-md bg-o"
+              @click="_removeSubTask(index)"
+              v-if="item.message === ''"
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </li>
     </ul>
@@ -42,6 +53,14 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'SubTaskList',
+  data() {
+    return {
+      isNewSubTaskEmptyInput: false,
+    }
+  },
+  mounted() {
+    this.isNewSubTaskEmptyInput = false
+  },
   props: {
     rootIndex: {
       type: Number,
@@ -49,6 +68,21 @@ export default {
     },
   },
   methods: {
+    _onAddSubTask(index) {
+      const notDones = this.tasks[this.rootIndex].subTask.filter((item) => item.message === '')
+      const notDone = notDones.findIndex((item) => item.currentIndex === index)
+
+      if (this.$refs.subTaskInputRef[notDone].value === '') {
+        this.isNewSubTaskEmptyInput = true
+        return
+      }
+
+      this.$store.commit('saveSubTask', {
+        index: this.rootIndex,
+        subIndex: index,
+        message: this.$refs.subTaskInputRef[notDone].value,
+      })
+    },
     _onEnterAddSubTask(index, event) {
       if (event.keyCode !== 13) return
       this.$store.commit('saveSubTask', {
@@ -75,6 +109,9 @@ export default {
     ...mapState({
       tasks: (state) => state.tasks,
     }),
+    validateSubTaskInput() {
+      return this.isNewSubTaskEmptyInput ? 'border-red-500' : 'border-gray-500'
+    },
   },
   created() {
     this.unsubscribe = this.$store.subscribe((mutation, state) => {

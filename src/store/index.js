@@ -14,6 +14,7 @@ const store = createStore({
       state.tasks[index].subTask = [
         ...currentSubTask,
         {
+          currentIndex: currentSubTask.length,
           message: '',
           isDone: false,
         },
