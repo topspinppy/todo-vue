@@ -4,12 +4,12 @@
     <div class="container-list-form__inline">
       <input
         ref="taskInputRef"
+        @keyup.enter="addTask"
         class="container-list-form__input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
         :class="validateInput"
       />
       <button
         class="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-md shadow-sm"
-        @keyup.enter="onEnterAddTask"
         @click="addTask"
       >
         +
