@@ -18,6 +18,7 @@
                 type="checkbox"
                 :key="index"
                 :value="index"
+                :checked="item.isDone"
                 @change="onCheckboxChange"
                 ref="taskListEl"
                 class="w-6 h-6 mr-4 rounded-xl"

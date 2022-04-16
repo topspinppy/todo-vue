@@ -76,10 +76,21 @@ export default {
       tasks: (state) => state.tasks,
     }),
   },
-  watch: {
-    tasks() {
-      console.log('watch')
-    },
+  created() {
+    this.unsubscribe = this.$store.subscribe((mutation, state) => {
+      if (mutation.type === 'onFinishedSubTask') {
+        const { rootIndex } = mutation.payload
+        const subTask = state.tasks[rootIndex].subTask
+        const isAllSubTaskDone = subTask.every((item) => item.isDone === true)
+        this.$store.commit('onFinishedTask', {
+          index: rootIndex,
+          isChecked: isAllSubTaskDone,
+        })
+      }
+    })
+  },
+  beforeUnmount() {
+    this.unsubscribe()
   },
 }
 </script>
