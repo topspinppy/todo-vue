@@ -159,7 +159,6 @@ export default {
           isChecked: this.tempCheckAll,
         })
       }
-
       this.$store.commit('onFinishedAllSubTask', {
         index: this.tempCheckIndex,
         isChecked: this.tempCheckAll,

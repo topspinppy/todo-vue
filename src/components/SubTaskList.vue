@@ -18,13 +18,18 @@
               class="container-list-form__input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
               :class="validateSubTaskInput"
               :key="index"
+              :value="item.message"
               @keyup.enter="_onEnterAddSubTask(index, $event)"
-              v-if="item.message === ''"
+              v-if="item.message === '' || (isEdited && index === tempIndexEdited)"
               ref="subTaskInputRef"
             />
-            <span v-if="item.message !== ''" class="text-gray-700" :class="validateTask(item)">{{
-              item.message
-            }}</span>
+            <span
+              v-if="(item.message !== '' && isEdited === false) || index !== tempIndexEdited"
+              class="text-gray-700"
+              :class="validateTask(item)"
+              @click="_onEditedSubTask(index)"
+              >{{ item.message }}</span
+            >
           </div>
           <div>
             <button
@@ -37,7 +42,7 @@
             <button
               class="bg-orange-400 hover:bg-orange-500 text-white font-bold py-1 px-2 rounded-md bg-o"
               @click="_removeSubTask(index)"
-              v-if="item.message === ''"
+              v-if="item.message === '' || (isEdited && index === tempIndexEdited)"
             >
               Delete
             </button>
@@ -56,6 +61,8 @@ export default {
   data() {
     return {
       isNewSubTaskEmptyInput: false,
+      isEdited: false,
+      tempIndexEdited: null,
     }
   },
   mounted() {
@@ -68,6 +75,10 @@ export default {
     },
   },
   methods: {
+    _onEditedSubTask(index) {
+      this.isEdited = true
+      this.tempIndexEdited = index
+    },
     _onAddSubTask(index) {
       const notDones = this.tasks[this.rootIndex].subTask.filter((item) => item.message === '')
       const notDone = notDones.findIndex((item) => item.currentIndex === index)
@@ -84,12 +95,16 @@ export default {
       })
     },
     _onEnterAddSubTask(index, event) {
+      console.log('eeeee', event.keyCode)
       if (event.keyCode !== 13) return
       this.$store.commit('saveSubTask', {
         index: this.rootIndex,
         subIndex: index,
         message: event.target.value,
       })
+      if (this.isEdited) {
+        this.isEdited = false
+      }
     },
     _removeSubTask(index) {
       this.$store.commit('removeSubTask', { rootIndex: this.rootIndex, subIndex: index })
