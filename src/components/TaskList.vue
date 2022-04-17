@@ -87,6 +87,8 @@ export default {
       tempTaskIndex: null,
       isNewTaskEmptyInput: false,
       tempIsDone: false,
+      tempCheckAll: false,
+      tempCheckIndex: null,
     }
   },
   methods: {
@@ -102,6 +104,8 @@ export default {
       this.tempInnerText = event.target.innerText
     },
     onCheckboxChange(event) {
+      this.tempCheckAll = event.target.checked
+      this.tempCheckIndex = event.target.value
       this.$store.commit('onFinishedTask', {
         index: event.target.value,
         isChecked: event.target.checked,
@@ -145,6 +149,21 @@ export default {
     },
     validateEditTaskInput() {
       return !this.tempIsDone && `cursor-pointer`
+    },
+  },
+  watch: {
+    tempCheckAll: function () {
+      if (this.tempCheckAll) {
+        this.$store.commit('onFinishedAllSubTask', {
+          index: this.tempCheckIndex,
+          isChecked: this.tempCheckAll,
+        })
+      }
+
+      this.$store.commit('onFinishedAllSubTask', {
+        index: this.tempCheckIndex,
+        isChecked: this.tempCheckAll,
+      })
     },
   },
 }
